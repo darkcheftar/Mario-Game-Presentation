@@ -1,9 +1,25 @@
-function createImage(imageSrc) {
+function createImage(imageSrc, className, id) {
   const image = new Image()
+  if(className){
+  image.setAttribute('class',className)
+  image.setAttribute('id',id)
+}
   image.src = imageSrc
   return image
 }
+function showSlide(id){
+  if (document.getElementById(`slide${id}`).classList.contains('visible')){
+  document.getElementById('slides').classList.remove('darkbackground');
 
+      document.querySelectorAll(".slide").forEach(slide=>{
+        slide.classList.remove('visible');
+      });
+      } 
+      else{
+        document.getElementById('slides').classList.add('darkbackground');
+        document.getElementById(`slide${id}`).classList.add('visible');
+      }
+}
 function randomIntFromRange(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
@@ -46,4 +62,4 @@ function fullscreen(canvas) {
     canvas.requestFullscreen();
   }
 }
-module.exports = { randomIntFromRange, randomColor, distance, createImage, playAudio, fullscreen }
+module.exports = { randomIntFromRange, randomColor, distance, createImage, playAudio, fullscreen ,showSlide}

@@ -4,7 +4,22 @@ import star from '../img/star.png';
 import background from "../img/background.png";
 import rocket from '../img/rocket.png'
 import { Platform, Player, GenericObject, Star} from "./main";
-import { createImage, fullscreen, playAudio,randomIntFromRange } from "./utils";
+import { createImage, fullscreen, playAudio,randomIntFromRange, showSlide } from "./utils";
+
+import slides1 from '../img/slides1.png';
+import slides2 from '../img/slides2.png';
+import slides3 from '../img/slides3.png';
+import slides4 from '../img/slides4.png';
+import slides5 from '../img/slides5.png';
+import slides6 from '../img/slides6.png';
+
+let slides = document.querySelector('#slides');
+slides.append(createImage(slides1,'slide',"slide1"));
+slides.append(createImage(slides2,'slide',"slide2"));
+slides.append(createImage(slides3,'slide',"slide3"));
+slides.append(createImage(slides4,'slide',"slide4"));
+slides.append(createImage(slides5,'slide',"slide5"));
+slides.append(createImage(slides6,'slide',"slide6"));
 
 import audio from '../img/audio.mp3'
 import jump from '../img/jump.mp3'
@@ -16,11 +31,16 @@ const canvas = document.querySelector("canvas");
 const con = document.querySelector('#con');
 const c = canvas.getContext("2d");
 
+
+
+
+
+let Slides = 0;
 canvas.width = 1024;
 canvas.height = 570;
 con.width = 1024;
 con.height = 570;
-let maxScrolloffset = 16000;
+let maxSlides = 6;
 let music = playAudio(audio, true);
 let platformImage;
 let starImage;
@@ -50,10 +70,9 @@ function init() {
   collectAudio = new Audio(collect);
   player = new Player(canvas);
 platforms = [];
-platforms.push(new Platform({ x: -301, y: 470, image: platformImage, canvas }))
 platforms.push(new Platform({ x: -1, y: 470, image: platformImage, canvas }))
     let o=0;
-  for(let i=0;i<18;i++){
+  for(let i=0;i<5;i++){
       o+=100;
       platforms.push(
       new Platform({
@@ -63,14 +82,7 @@ platforms.push(new Platform({ x: -1, y: 470, image: platformImage, canvas }))
         canvas,
       }))
   }
-new Platform({
-      x:  700+ (platformImage.width*18+300*17)  - 2,
-      y: 470-Math.random()*100,
-      image: platformImage,
-      canvas,
-    })
-
-    stars = platforms.map(platform=>new Star({x:randomIntFromRange(platform.position.x,platform.position.x+platform.width), y:platform.position.y-100,image:starImage,canvas}));
+    stars = platforms.map((platform,idx)=>new Star({id:idx,x:randomIntFromRange(platform.position.x,platform.position.x+platform.width), y:platform.position.y-100,image:starImage,canvas}));
   genericObjects = [
     new GenericObject({
       x: -1,
@@ -86,7 +98,7 @@ new Platform({
     })
   ];
   rocketobj = new GenericObject({
-    x:platforms.at(-1).position.x+platforms[3].width/2,
+    x:platforms.at(-1).position.x+platforms[0].width/2,
     y:platforms.at(-1).position.y-500,
     image:createImage(rocket),
     canvas
@@ -94,7 +106,7 @@ new Platform({
   //headstart
   platforms.forEach(platform=>{
     // scrollOffset += 14640;
-     platform.position.x += 300;
+     platform.position.x += 0;
   })
   console.log(platforms)
   scrollOffset = 0;
@@ -113,7 +125,7 @@ function animate() {
     platform.draw();
   });
   stars.forEach(star=>{
-    if (star.visible)
+
       star.draw();
   })
   rocketobj.draw()
@@ -129,15 +141,13 @@ function animate() {
   } else {
     player.velocity.x = 0;
 
-    if (keys.right.pressed && scrollOffset <maxScrolloffset ) {
+    if (keys.right.pressed && scrollOffset <6000 ) {
       scrollOffset += player.speed;
       platforms.forEach((platform) => {
         platform.position.x -= player.speed;
       });
       stars.forEach(star=>{
-        if(star.visible){
           star.position.x -= player.speed;
-        }
       })
       genericObjects.forEach((genericObject) => {
         genericObject.position.x -= player.speed * 0.66;
@@ -163,20 +173,18 @@ function animate() {
   // console.log(scrollOffset);
   // star collision detection
   stars.forEach(star=>{
-    if( star.visible &&
+    if(
       player.position.x < star.position.x + star.width &&
         player.position.x + player.width > star.position.x &&
         player.position.y < star.position.y + star.height &&
         player.height + player.position.y > star.position.y
     ){
+      Slides = star.id+1;
       if(!collectAudio.paused){
         collectAudio.pause();
         collectAudio.currentTime = 0;
       }
       collectAudio.play();
-      star.visible = false;
-      player.score +=1;
-      console.log(player.score);
 
     }
   })
@@ -231,10 +239,10 @@ function animate() {
   }
 
   // win condition
-  if(scrollOffset/maxScrolloffset>0.95){
+  if(Slides/maxSlides == 1){
     window.dispatchEvent(new CustomEvent('conf'));
     c.font = "100px Arial";
-    c.fillText('You Win!!!',canvas.width/3,canvas.height/2);
+    c.fillText('finalSlide',canvas.width/3,canvas.height/2);
   }
   
   // lose condition
@@ -244,9 +252,9 @@ function animate() {
   //stats
   c.rect(10,10,100,10);
   c.stroke();
-  c.fillRect(10,10,(scrollOffset/maxScrolloffset)*100,10);
+  c.fillRect(10,10,(Slides/maxSlides)*100,10);
   c.font = "20px Arial";
-  c.fillText(`Stars: ${player.score}`,10,50)
+  c.fillText(`Slide: ${Slides}`,10,50)
 
 }
 
@@ -272,14 +280,14 @@ document.querySelector('button').addEventListener('click',()=>{
       console.log('hi',div)
     div.classList.add('invisible')
     fullscreen(document.getElementById('fullscreen'))
-    music.play()
+    // music.play()
     init();
 });
 init();
 animate();
 
 addEventListener("keydown", ({ key }) => {
-  // console.log(keyCode)
+
   switch (key) {
     case 'a':
     case 'ArrowLeft':
@@ -314,7 +322,7 @@ addEventListener("keydown", ({ key }) => {
       break;
     case 'f':
      fullscreen(document.getElementById('fullscreen'));
-    break;
+      break;
     case 'm':
       if(!music.paused){
         music.pause();
@@ -323,6 +331,10 @@ addEventListener("keydown", ({ key }) => {
         music.play();
       }
     break;
+    case ' ':
+      console.log(Slides)
+      showSlide(Slides);
+      break;
   }
 
   console.log(keys.right.pressed);

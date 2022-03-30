@@ -98,19 +98,14 @@ class StationaryObject {
 }
 class Platform extends StationaryObject {}
 class Star extends StationaryObject{
-    constructor({ x, y, image, canvas }){
+    constructor({id, x, y, image, canvas }){
+        
         super({ x, y, image, canvas })
         this.length = 50;
         this.count = 0;
         this.oy = y
+        this.id = id;
         this.offset = Math.random()*0.3;
-        this.visible = true;
-    }
-    draw(){
-      this.count+= 0.03;
-     super.draw()
-    
-      this.position.y = this.oy + Math.sin(this.offset+this.count)*this.length
     }
 }
 
