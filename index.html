@@ -19,8 +19,9 @@
         width: 100vw;
         display: flex;
         justify-items: center;
-        z-index: 2;
+        z-index: 3;
       }
+     
       #fullscreen{
         height:100vh;
         width: 100vw;
@@ -52,6 +53,26 @@
       #con{
         z-index: 1;
       }
+      .slide{
+        visibility: hidden;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+          }
+      #slides{
+        position: fixed;
+        height: 100vh;
+        width: 100vw;
+        z-index: 2;
+      }
+      .visible{
+        visibility: visible;
+      }
+      .darkbackground{
+        background-color: black;
+      }
+
     </style>
 <link rel="shortcut icon" href="favicon.ico"></head>
   <body>
@@ -60,7 +81,9 @@
         Start Game
       </button>
     </div>
-    <div id="fullscreen">
+    <section id="slides">
+  
+    </section>
     <canvas></canvas>
     <canvas id="con"></canvas>
   </div>
