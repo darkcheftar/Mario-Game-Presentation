@@ -1,0 +1,8 @@
+node_modules
+.ds_store
+.eslintrc.js
+favicon.ico
+package-lock.json
+dist
+
+
